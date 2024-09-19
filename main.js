@@ -1,16 +1,13 @@
-//action types
 const INCREMENT = 'INCREMENT';
 const DECREMENT = 'DECREMENT';
 
 function increment() {
-  //action creator
-  return { type: INCREMENT }; //action
+  return { type: INCREMENT };
 }
 function decrement() {
   return { type: DECREMENT };
 }
 
-//reducer
 function reducer(state = 0, action) {
   switch (action.type) {
     case INCREMENT:
@@ -22,53 +19,37 @@ function reducer(state = 0, action) {
   }
 }
 
-var store = Redux.createStore(reducer, enableDevTools());
+var store = Redux.createStore(reducer);
 
-function enableDevTools() {
-  return (
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-  );
-}
 
-const { Provider, useSelector, useDispatch } = ReactRedux;
-
-function Result() {
-  const count = useSelector((state) => state);
+function Counter(props) {
   return (
     <React.Fragment>
-      <div>Count: {count}</div>
+      <div>Count: {props.count}</div>
+      <button onClick={props.increment}>+</button>
+      <button onClick={props.decrement}>-</button>
     </React.Fragment>
   );
 }
 
-function Actions() {
-  const dispatch = useDispatch();
-  return (
-    <>
-      <button onClick={() => dispatch(increment())}>+</button>
-      <button onClick={() => dispatch(decrement())}>-</button>
-    </>
-  );
-}
+const mapStateToProps = (state) => {
+  return {
+    count: state,
+  };
+};
 
-function CounterPage() {
-  return (
-    <>
-      <Actions />
-      <Result />
-    </>
-  );
-}
+const mapDispatchToProps = { increment, decrement };
 
-function App() {
-  return <CounterPage />;
-}
+const WrappedCounter = ReactRedux.connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Counter);
 
 const element = (
   <div>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <ReactRedux.Provider store={store}>
+      <WrappedCounter />
+    </ReactRedux.Provider>
   </div>
 );
 
