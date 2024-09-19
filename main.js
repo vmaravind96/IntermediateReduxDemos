@@ -1,6 +1,6 @@
 //action types
-const INCREMENT = 'INCREMENT';
-const DECREMENT = 'DECREMENT';
+const INCREMENT = "INCREMENT";
+const DECREMENT = "DECREMENT";
 
 //action creators
 function increment() {
@@ -10,40 +10,44 @@ function decrement() {
   return { type: DECREMENT };
 }
 
+let initialState = {
+  count: 0,
+  isSideBarMenuOpen: true,
+  employees: [],
+};
+
 //reducer
-function reducer(state = 0, action) {
+function reducer(state = initialState, action) {
   switch (action.type) {
     case INCREMENT:
-      return state + 1;
+      return { ...state, count: state.count + 1 };
     case DECREMENT:
-      return state - 1;
+      return { ...state, count: state.count - 1 };
     default:
       return state;
   }
 }
 
-//store
-// Pass in the brain logic to the store (reducer)
-// var store = Redux.createStore(reducer);
-var store = Redux.createStore(reducer, enableDevTools());
-
 function enableDevTools() {
-  // Enable Redux DevTools extension to do logging
   return (
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
   );
 }
+//store
+var store = Redux.createStore(reducer, enableDevTools());
 
-function logState() {
-  console.log(store.getState().toString());
+function createStore(reducer) {
+  let store = new Store(reducer);
+  return store;
 }
 
-// Subscribe to the changes in the state
+function logState() {
+  console.log(store.getState());
+}
+
 store.subscribe(logState);
 
-// Dispatch only takes in action.
-// State will be passed by default by store internally
-store.dispatch({ type: '' });
+store.dispatch({ type: "noaction" });
 store.dispatch(increment());
 store.dispatch(increment());
 store.dispatch(decrement());
