@@ -28,18 +28,38 @@ function reducer(state = initialState, action) {
   }
 }
 
-function enableDevTools() {
-  return (
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-  );
-}
-//store
-var store = Redux.createStore(reducer, enableDevTools());
+class Store {
+  _state = {};
+  reducer;
+  listeners = [];
 
-function createStore(reducer) {
-  let store = new Store(reducer);
+  constructor(reducer, initialState) {
+    this.reducer = reducer;
+    this._state = initialState;
+  }
+
+  getState() {
+    return this._state;
+  }
+
+  dispatch(action) {
+    this._state = this.reducer(this._state, action);
+    // Notify subscribers
+    this.listeners.forEach((callbackFn) => callbackFn());
+  }
+
+  subscribe(callbackFn) {
+    this.listeners.push(callbackFn);
+  }
+}
+
+function createStore(reducer, initialState) {
+  let store = new Store(reducer, initialState);
   return store;
 }
+
+// store
+var store = createStore(reducer);
 
 function logState() {
   console.log(store.getState());
