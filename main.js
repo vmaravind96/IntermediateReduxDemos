@@ -1,76 +1,76 @@
 //action types
-const INCREMENT = "INCREMENT";
-const DECREMENT = "DECREMENT";
+const INCREMENT = 'INCREMENT';
+const DECREMENT = 'DECREMENT';
 
-//action creators
 function increment() {
-  return { type: INCREMENT };
+  //action creator
+  return { type: INCREMENT }; //action
 }
 function decrement() {
   return { type: DECREMENT };
 }
 
-let initialState = {
-  count: 0,
-  isSideBarMenuOpen: true,
-  employees: [],
-};
-
 //reducer
-function reducer(state = initialState, action) {
+function reducer(state = 0, action) {
   switch (action.type) {
     case INCREMENT:
-      return { ...state, count: state.count + 1 };
+      return state + 1;
     case DECREMENT:
-      return { ...state, count: state.count - 1 };
+      return state - 1;
     default:
       return state;
   }
 }
 
-class Store {
-  _state = {};
-  reducer;
-  listeners = [];
+var store = Redux.createStore(reducer, enableDevTools());
 
-  constructor(reducer, initialState) {
-    this.reducer = reducer;
-    this._state = initialState;
-  }
-
-  getState() {
-    return this._state;
-  }
-
-  dispatch(action) {
-    this._state = this.reducer(this._state, action);
-    // Notify subscribers
-    this.listeners.forEach((callbackFn) => callbackFn());
-  }
-
-  subscribe(callbackFn) {
-    this.listeners.push(callbackFn);
-  }
+function enableDevTools() {
+  return (
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  );
 }
 
-function createStore(reducer, initialState) {
-  let store = new Store(reducer, initialState);
-  return store;
+const { Provider, useSelector, useDispatch } = ReactRedux;
+
+function Result() {
+  const count = useSelector((state) => state);
+  return (
+    <React.Fragment>
+      <div>Count: {count}</div>
+    </React.Fragment>
+  );
 }
 
-// store
-var store = createStore(reducer);
-
-function logState() {
-  console.log(store.getState());
+function Actions() {
+  const dispatch = useDispatch();
+  return (
+    <>
+      <button onClick={() => dispatch(increment())}>+</button>
+      <button onClick={() => dispatch(decrement())}>-</button>
+    </>
+  );
 }
 
-store.subscribe(logState);
+function CounterPage() {
+  return (
+    <>
+      <Actions />
+      <Result />
+    </>
+  );
+}
 
-store.dispatch({ type: "noaction" });
-store.dispatch(increment());
-store.dispatch(increment());
-store.dispatch(decrement());
-store.dispatch(decrement());
-store.dispatch(decrement());
-store.dispatch(decrement());
+function App() {
+  return <CounterPage />;
+}
+
+const element = (
+  <div>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </div>
+);
+
+const rootElement = document.getElementById('root');
+ReactDOM.createRoot(rootElement).render(element);
